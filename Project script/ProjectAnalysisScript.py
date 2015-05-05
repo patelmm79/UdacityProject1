@@ -9,6 +9,7 @@ import pandas
 from ggplot import *
 import pandasql
 
+
 fileimport="turnstile_weather_v2.csv"
 
 
@@ -69,18 +70,23 @@ def compare_averages(filename):
 
 def plotrainhistogram (inputfile):
      theframe=pandas.read_csv(inputfile)
-     wasraining=theframe[['ENTRIESn_hourly']][theframe['rain']==1]
-    
-     gg = ggplot(wasnotraining,aes('ENTRIESn_hourly')) + geom_histogram() + ggtitle("Histogram of Subway Entries--Raining") + xlab("Number of Entries") + ylab ("Frequency")
+     #wasraining=theframe[['ENTRIESn_hourly']][theframe['rain']==1]
+     q="select * from theframe where rain = 1"
+    #wasraining=theframe[theframe['rain']==1]
+     wasraining=pandasql.sqldf(q.lower(), locals())
+     gg = ggplot(wasraining,aes('ENTRIESn_hourly')) + geom_histogram(binwidth=500) + ggtitle("Histogram of Subway Entries--Raining") + xlab("Number of Entries") + ylab ("Frequency") +  scale_x_continuous(limits=(0, 15000)) +  scale_y_continuous(limits=(0, 12000))
      return gg
      
      
 def plotnorainhistogram (inputfile):
      theframe=pandas.read_csv(inputfile)
-     wasnotraining=theframe[['ENTRIESn_hourly']][theframe['rain']==0]
+     q="select * from theframe where rain = 0"
+    #wasraining=theframe[theframe['rain']==1]
+     wasnotraining=pandasql.sqldf(q.lower(), locals())
+     #wasnotraining=theframe[['ENTRIESn_hourly']][theframe['rain']==0]
      
     
-     gg = ggplot(wasnotraining,aes('ENTRIESn_hourly')) + geom_histogram() + ggtitle("Histogram of Subway Entries--Not raining") + xlab("Number of Entries") + ylab ("Frequency")
+     gg = ggplot(wasnotraining,aes('ENTRIESn_hourly')) + geom_histogram(binwidth=500) + ggtitle("Histogram of Subway Entries--Not raining") + xlab("Number of Entries") + ylab ("Frequency")+  scale_x_continuous(limits=(0, 15000)) +  scale_y_continuous(limits=(0, 12000))
      return gg
    
  
@@ -88,7 +94,7 @@ def plotnorainhistogram (inputfile):
 
 def plotdaysweekbarchart(inputfile):
     theframe=pandas.read_csv(inputfile)
-    days_week=[0,1,2,3,4,5,6]    
+    days_week=['0-Monday','1-Tuesday','2-Wednesday','3-Thursday','4-Friday','5-Saturday','6-Sunday']    
     means=[]
     
    
@@ -107,7 +113,7 @@ def plotdaysweekbarchart(inputfile):
     
     #gg = ggplot(wasraining,aes('ENTRIESn_hourly')) + geom_histogram(binwidth=500) + ggtitle("Histogram of Subway Entries--Raining") + xlab("Number of Entries per Hour") + ylab ("Frequency")
 
-    gg = ggplot(dayweekframe,aes(x='day_week',y= 'means_Entries')) +geom_bar(aes(weight='means_Entries'))+ ggtitle("Average Ridership by Day of Week") + xlab("Day of Week") + ylab ("Average Number of Entries") 
+    gg = ggplot(dayweekframe,aes(x='day_week',y= 'means_Entries')) +geom_bar(aes(weight='means_Entries'))+ ggtitle("Average Ridership by Day of Week") + xlab("Day of Week") + ylab ("Average Number of Entries")  
     #+ scale_y_continuous(limits=(0,5))
 
   #  gg = ggplot(theframe,aes('day_week')) + geom_bar() + ggtitle("Ridership by Day of Week") + xlab("Day of Week") + ylab ("Frequency")
@@ -118,3 +124,6 @@ def plotdaysweekbarchart(inputfile):
     return gg
     
 #print compare_averages(fileimport)
+    
+#print plotdaysweekbarchart(fileimport)
+
